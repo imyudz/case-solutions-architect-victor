@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    @apply bg-magic-50 text-magic-800 min-w-80;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-magic-200 rounded;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-magic-400 rounded hover:bg-magic-500;
+  }
+}
+
+@layer components {
+  /* Utility classes for accessibility */
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  /* House color utilities */
+  .house-gryffindor {
+    --house-primary: #dc3545;
+    --house-secondary: #ffd700;
+  }
+
+  .house-slytherin {
+    --house-primary: #28a745;
+    --house-secondary: #c0c0c0;
+  }
+
+  .house-hufflepuff {
+    --house-primary: #ffc107;
+    --house-secondary: #343a40;
+  }
+
+  .house-ravenclaw {
+    --house-primary: #007bff;
+    --house-secondary: #cd7f32;
+  }
+
+  /* Button components */
+  .btn-magical {
+    @apply px-6 py-3 rounded-xl2 font-medium transition-all duration-300 
+           focus:outline-none focus:ring-4 focus:ring-opacity-50
+           hover-lift;
+  }
+
+  .btn-primary {
+    @apply btn-magical bg-magic-gradient text-white 
+           hover:shadow-magic focus:ring-purple-300;
+  }
+
+  .btn-secondary {
+    @apply btn-magical glass border border-glass-border text-white
+           hover:bg-white hover:bg-opacity-20 focus:ring-white;
+  }
+
+  /* Card components */
+  .card-magical {
+    @apply rounded-magical shadow-glass border border-glass-border
+           bg-white bg-opacity-90 backdrop-blur-magical
+           transition-all duration-300 hover-lift;
+  }
+}
+
+@layer utilities {
+  /* Custom focus styles for accessibility */
+  .focus-magical {
+    @apply focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-opacity-50;
+  }
+
+  /* Text shadows */
+  .text-shadow-magical {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .text-shadow-glow {
+    text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+  }
+
+  /* Animation delays */
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+  .delay-500 { animation-delay: 0.5s; }
+}
