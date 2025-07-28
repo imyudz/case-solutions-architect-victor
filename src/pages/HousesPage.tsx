@@ -10,13 +10,6 @@ export function HousesPage() {
   const analytics = serviceContainer.getAnalyticsService();
 
   useEffect(() => {
-    analytics.track({
-      name: 'page_view',
-      properties: {
-        page: 'houses_list',
-        path: '/houses'
-      }
-    });
 
     // Fetch houses if not already loaded
     if (state.houses.length === 0 && !state.loading && !state.error) {
@@ -25,13 +18,10 @@ export function HousesPage() {
   }, [fetchHouses, state.houses.length, state.loading, state.error, analytics]);
 
   const handleRetry = () => {
-    analytics.track({
-      name: 'retry_button_clicked',
-      properties: {
-        page: 'houses_list',
-        errorType: state.error?.code || 'unknown'
-      }
-    });
+    analytics.track('ButtonClicked', {
+      id: 'retry_button',
+      label: 'Retry'
+    })
     fetchHouses();
   };
 

@@ -11,13 +11,9 @@ export function HouseCard({ house, className = '' }: HouseCardProps) {
   const analytics = serviceContainer.getAnalyticsService();
 
   const handleCardClick = () => {
-    analytics.track({
-      name: 'house_card_clicked',
-      properties: {
-        houseId: house.id,
-        houseName: house.name,
-        source: 'house_list'
-      }
+    analytics.track('ButtonClicked', {
+      id: 'house_card_clicked',
+      label: 'Explore House'
     });
   };
 
@@ -77,6 +73,7 @@ export function HouseCard({ house, className = '' }: HouseCardProps) {
   };
 
   const [primaryColor, secondaryColor] = getHouseColors(house.houseColours);
+  const houseGradient = getHouseGradient(house.name);
 
   return (
     <Link 
@@ -85,9 +82,9 @@ export function HouseCard({ house, className = '' }: HouseCardProps) {
       onClick={handleCardClick}
     >
       <article 
-        className="group relative card-magical card-house hover-lift interactive
+        className={`group relative card-magical card-house hover-lift interactive
                    h-full min-h-[420px] flex flex-col overflow-hidden
-                   focus-ring"
+                   focus-ring ${houseGradient}`}
         style={{
           '--house-primary': primaryColor,
           '--house-secondary': secondaryColor

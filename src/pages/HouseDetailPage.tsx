@@ -17,13 +17,9 @@ export function HouseDetailPage() {
       return;
     }
 
-    analytics.track({
-      name: 'page_view',
-      properties: {
-        page: 'house_detail',
-        path: `/house/${id}`,
-        houseId: id
-      }
+    analytics.track('PageView', {
+      page_name: 'house_detail',
+      path: `/house/${id}`
     });
 
     fetchHouseById(id);
@@ -36,24 +32,17 @@ export function HouseDetailPage() {
   const handleRetry = () => {
     if (!id) return;
     
-    analytics.track({
-      name: 'retry_button_clicked',
-      properties: {
-        page: 'house_detail',
-        houseId: id,
-        errorType: state.error?.code || 'unknown'
-      }
+    analytics.track('ButtonClicked', {
+      id: 'retry_button',
+      label: 'Retry'
     });
     fetchHouseById(id);
   };
 
   const handleBackToHouses = () => {
-    analytics.track({
-      name: 'back_to_houses_clicked',
-      properties: {
-        page: 'house_detail',
-        houseId: id
-      }
+    analytics.track('ButtonClicked', {
+      id: 'back_to_houses_button',
+      label: 'Back to Houses'
     });
     navigate('/houses');
   };

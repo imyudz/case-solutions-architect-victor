@@ -38,16 +38,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       errorInfo,
     });
 
-    // Log error to analytics
-    this.analytics.track({
-      name: 'react_error_boundary_triggered',
-      properties: {
-        error: error.message,
-        stack: error.stack,
-        componentStack: errorInfo.componentStack,
-        errorBoundary: 'ErrorBoundary',
-      },
-    });
+    // // Log error to analytics
+    // this.analytics.track(, {
+    //     error: error.message,
+    //     stack: error.stack,
+    //     componentStack: errorInfo.componentStack,
+    //     errorBoundary: 'ErrorBoundary',
+    //   },
+    // });
 
     // Log to console in development
     console.error('Error Boundary caught an error:', error, errorInfo);
@@ -60,11 +58,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       errorInfo: null,
     });
 
-    this.analytics.track({
-      name: 'error_boundary_retry_clicked',
-      properties: {
-        previousError: this.state.error?.message,
-      },
+    this.analytics.track('ButtonClicked', {
+      id: 'error_boundary_retry_clicked',
+      label: 'Retry',
     });
   };
 

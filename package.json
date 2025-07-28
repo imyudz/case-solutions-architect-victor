@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.20.1",
+    "@amplitude/plugin-session-replay-browser": "^1.21.1",
     "@tailwindcss/postcss": "^4.1.11",
     "axios": "^1.11.0",
     "react": "^19.1.0",

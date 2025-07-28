@@ -1,6 +1,6 @@
 import type { HouseDto } from '../types/api';
 import type { HttpClient } from './httpClient';
-import type { AnalyticsService } from './analytics';
+import type { AnalyticsService } from './analytics/analytics';
 
 export interface WizardWorldApiService {
   getHouses(): Promise<HouseDto[]>;
