@@ -4,7 +4,6 @@ import type { ApiError } from '../types/api';
 import { serviceContainer } from '../services/container';
 import { HousesContext, type HousesState, type HousesContextType } from './houses-context';
 
-// Action types
 type HousesAction =
   | { type: 'FETCH_HOUSES_START' }
   | { type: 'FETCH_HOUSES_SUCCESS'; payload: import('../types/api').HouseDto[] }
@@ -15,7 +14,6 @@ type HousesAction =
   | { type: 'CLEAR_ERROR' }
   | { type: 'CLEAR_SELECTED_HOUSE' };
 
-// Initial state
 const initialState: HousesState = {
   houses: [],
   selectedHouse: null,
@@ -23,7 +21,6 @@ const initialState: HousesState = {
   error: null,
 };
 
-// Reducer
 function housesReducer(state: HousesState, action: HousesAction): HousesState {
   switch (action.type) {
     case 'FETCH_HOUSES_START':
@@ -89,7 +86,6 @@ function housesReducer(state: HousesState, action: HousesAction): HousesState {
   }
 }
 
-// Provider component
 interface HousesProviderProps {
   children: ReactNode;
 }
@@ -103,21 +99,18 @@ export function HousesProvider({ children }: HousesProviderProps) {
     dispatch({ type: 'FETCH_HOUSES_START' });
 
     try {
-      await analytics.track({
-        name: 'houses_fetch_initiated',
-        properties: { source: 'houses_context' }
+      await analytics.track('FeatureUsed', {
+        feature_name: 'houses_list_fetch',
+        usage_context: 'houses_provider'
       });
 
       const houses = await apiService.getHouses();
       
       dispatch({ type: 'FETCH_HOUSES_SUCCESS', payload: houses });
 
-      await analytics.track({
-        name: 'houses_fetch_success',
-        properties: { 
-          count: houses.length,
-          source: 'houses_context'
-        }
+      await analytics.track('FeatureUsed', {
+        feature_name: 'houses_list_loaded',
+        usage_context: `${houses.length}_houses_loaded`
       });
     } catch (error) {
       const apiError: ApiError = {
@@ -128,14 +121,10 @@ export function HousesProvider({ children }: HousesProviderProps) {
 
       dispatch({ type: 'FETCH_HOUSES_ERROR', payload: apiError });
 
-      await analytics.track({
-        name: 'houses_fetch_error',
-        properties: {
-          error: apiError.message,
-          status: apiError.status,
-          code: apiError.code,
-          source: 'houses_context'
-        }
+      await analytics.track('ErrorOccurred', {
+        error_type: 'Context Error',
+        error_message: `Houses fetch failed: ${apiError.message}`,
+        page_name: window.location.pathname
       });
     }
   }, [apiService, analytics]);
@@ -144,22 +133,18 @@ export function HousesProvider({ children }: HousesProviderProps) {
     dispatch({ type: 'FETCH_HOUSE_START' });
 
     try {
-      await analytics.track({
-        name: 'house_detail_fetch_initiated',
-        properties: { houseId: id, source: 'houses_context' }
+      await analytics.track('FeatureUsed', {
+        feature_name: 'house_detail_fetch',
+        usage_context: `house_${id}`
       });
 
       const house = await apiService.getHouseById(id);
       
       dispatch({ type: 'FETCH_HOUSE_SUCCESS', payload: house });
 
-      await analytics.track({
-        name: 'house_detail_fetch_success',
-        properties: { 
-          houseId: id,
-          houseName: house.name,
-          source: 'houses_context'
-        }
+      await analytics.track('FeatureUsed', {
+        feature_name: 'house_detail_loaded',
+        usage_context: house.name || 'unknown_house'
       });
     } catch (error) {
       const apiError: ApiError = {
@@ -170,15 +155,10 @@ export function HousesProvider({ children }: HousesProviderProps) {
 
       dispatch({ type: 'FETCH_HOUSE_ERROR', payload: apiError });
 
-      await analytics.track({
-        name: 'house_detail_fetch_error',
-        properties: {
-          houseId: id,
-          error: apiError.message,
-          status: apiError.status,
-          code: apiError.code,
-          source: 'houses_context'
-        }
+      await analytics.track('ErrorOccurred', {
+        error_type: 'Context Error',
+        error_message: `House detail fetch failed for ${id}: ${apiError.message}`,
+        page_name: window.location.pathname
       });
     }
   }, [apiService, analytics]);

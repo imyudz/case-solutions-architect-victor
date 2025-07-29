@@ -1,16 +1,15 @@
-import { Component } from 'react';
-import type { ReactNode, ErrorInfo } from 'react';
+import React, { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
 import { serviceContainer } from '../services/container';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
-  fallback?: ReactNode;
 }
 
 interface ErrorBoundaryState {
   hasError: boolean;
-  error: Error | null;
-  errorInfo: ErrorInfo | null;
+  error?: Error;
+  errorInfo?: ErrorInfo;
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -18,105 +17,85 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-      errorInfo: null,
-    };
+    this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return {
       hasError: true,
-      error,
+      error
     };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    this.setState({
-      error,
-      errorInfo,
+    this.analytics.track('ErrorBoundaryTriggered', {
+      component_name: 'ErrorBoundary',
+      error_message: error.message,
+      stack_trace: error.stack || 'No stack trace available'
     });
 
-    // // Log error to analytics
-    // this.analytics.track(, {
-    //     error: error.message,
-    //     stack: error.stack,
-    //     componentStack: errorInfo.componentStack,
-    //     errorBoundary: 'ErrorBoundary',
-    //   },
-    // });
+    this.analytics.track('ErrorOccurred', {
+      error_type: 'React Error Boundary',
+      error_message: error.message,
+      page_name: window.location.pathname,
+      stack_trace: error.stack
+    });
 
-    // Log to console in development
-    console.error('Error Boundary caught an error:', error, errorInfo);
+    this.setState({
+      error,
+      errorInfo
+    });
+    
+    console.error('Error caught by boundary:', error, errorInfo);
   }
 
   handleRetry = () => {
-    this.setState({
-      hasError: false,
-      error: null,
-      errorInfo: null,
-    });
-
     this.analytics.track('ButtonClicked', {
-      id: 'error_boundary_retry_clicked',
-      label: 'Retry',
+      id: 'error_boundary_retry',
+      label: 'Retry Application'
     });
+    
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    window.location.reload();
   };
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
-
       return (
-        <div className="min-h-screen bg-magic-gradient bg-fixed flex items-center justify-center p-4">
-          <div className="max-w-lg w-full">
-            <div className="glass rounded-magical p-8 text-center shadow-glass border border-red-200 border-opacity-30">
-              {/* Error icon */}
-              <div className="text-6xl mb-6 animate-gentle-float">🔮</div>
-              
-              {/* Error title */}
-              <h1 className="text-3xl font-bold text-white mb-4 text-shadow-magical">
-                Oops! Something went wrong
-              </h1>
-              
-              {/* Error message */}
-              <p className="text-lg text-white text-opacity-90 mb-8 leading-relaxed">
-                It seems our magic has encountered an unexpected spell. Don't worry, we're on it!
-              </p>
-              
-              {/* Error details for development */}
-              {import.meta.env.DEV && this.state.error && (
-                <details className="mb-6 text-left">
-                  <summary className="cursor-pointer text-white text-opacity-70 hover:text-opacity-100 
-                                   font-medium mb-3 transition-colors duration-200">
-                    Error Details (Development)
-                  </summary>
-                  <pre className="bg-black bg-opacity-30 rounded-lg p-4 text-sm font-mono 
-                                 text-white text-opacity-80 overflow-auto max-h-40 
-                                 border border-white border-opacity-20">
-                    {this.state.error.toString()}
-                    {this.state.errorInfo?.componentStack}
-                  </pre>
-                </details>
-              )}
-
-              {/* Action buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 bg-fixed flex items-center justify-center">
+          <div className="container-responsive">
+            <div className="text-center">
+              <div className="glass-strong rounded-3xl p-12 max-w-lg mx-auto border border-white/20">
+                <div className="text-6xl mb-6">🔮</div>
+                <h1 className="heading-magical text-3xl text-white mb-6">
+                  Something Magical Went Wrong
+                </h1>
+                <p className="text-white/80 mb-8 leading-relaxed">
+                  It seems like a spell has gone awry! Even the best wizards encounter unexpected magic sometimes.
+                </p>
+                
+                {import.meta.env.DEV && this.state.error && (
+                  <div className="text-left bg-black/20 rounded-lg p-4 mb-6 text-sm text-white/70 max-h-40 overflow-y-auto">
+                    <strong>Error:</strong> {this.state.error.message}
+                    {this.state.error.stack && (
+                      <pre className="mt-2 text-xs whitespace-pre-wrap">
+                        {this.state.error.stack}
+                      </pre>
+                    )}
+                  </div>
+                )}
+                
                 <button 
                   onClick={this.handleRetry}
-                  className="btn-primary flex-1 sm:flex-none"
+                  className="btn-magical btn-primary text-lg interactive shadow-lg 
+                           hover:shadow-xl transition-all duration-300"
                 >
-                  Try Again
+                  Cast Repair Spell
                 </button>
-                <button 
-                  onClick={() => window.location.reload()}
-                  className="btn-secondary flex-1 sm:flex-none"
-                >
-                  Reload Page
-                </button>
+                
+                <p className="text-white/60 text-sm mt-4">
+                  This will reload the application
+                </p>
               </div>
             </div>
           </div>

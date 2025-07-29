@@ -14,11 +14,11 @@ export function ErrorMessage({
   showDetails = false 
 }: ErrorMessageProps) {
   const getErrorIcon = (status?: number) => {
-    if (!status) return '🌩️'; // Network error
-    if (status >= 500) return '🔥'; // Server error
-    if (status === 404) return '🗺️'; // Not found
-    if (status >= 400) return '⚠️'; // Client error
-    return '❌'; // Generic error
+    if (!status) return '🌩️';
+    if (status >= 500) return '🔥';
+    if (status === 404) return '🗺️';
+    if (status >= 400) return '⚠️';
+    return '❌';
   };
 
   const getErrorTitle = (status?: number) => {
@@ -48,22 +48,18 @@ export function ErrorMessage({
   return (
     <div className={`max-w-md mx-auto ${className}`}>
       <div className="glass rounded-magical p-8 text-center shadow-glass border border-red-200 border-opacity-30">
-        {/* Error Icon */}
         <div className="text-6xl mb-6 animate-gentle-float">
           {getErrorIcon(error.status)}
         </div>
         
-        {/* Error Title */}
         <h3 className="text-2xl font-bold text-white mb-4 text-shadow-magical">
           {getErrorTitle(error.status)}
         </h3>
         
-        {/* Error Description */}
         <p className="text-white text-opacity-90 mb-6 leading-relaxed">
           {getErrorDescription(error)}
         </p>
 
-        {/* Technical Details */}
         {showDetails && (
           <details className="mb-6 text-left">
             <summary className="cursor-pointer text-white text-opacity-70 hover:text-opacity-100 
@@ -84,7 +80,6 @@ export function ErrorMessage({
           </details>
         )}
 
-        {/* Retry Button */}
         {onRetry && (
           <div className="flex justify-center">
             <button 
@@ -92,7 +87,7 @@ export function ErrorMessage({
               className="btn-secondary inline-flex items-center gap-2 text-lg font-medium
                        hover:bg-white hover:bg-opacity-20 focus-magical"
             >
-              🪄 Try Again
+              Try Again
             </button>
           </div>
         )}

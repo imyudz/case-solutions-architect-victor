@@ -18,6 +18,8 @@ export class WizardWorldApiServiceImpl implements WizardWorldApiService {
   }
 
   async getHouses(): Promise<HouseDto[]> {
+    const startTime = Date.now();
+    
     try {
       await this.analytics.track('ApiRequestStarted', {
         endpoint: '/Houses',
@@ -25,19 +27,31 @@ export class WizardWorldApiServiceImpl implements WizardWorldApiService {
       });
 
       const houses = await this.httpClient.get<HouseDto[]>('/Houses');
+      const responseTime = Date.now() - startTime;
 
       await this.analytics.track('ApiRequestSuccess', {
-          endpoint: '/Houses',
+        endpoint: '/Houses',
         method: 'GET',
-        count: houses.length
+        count: houses.length,
+        response_time: responseTime
       });
 
       return houses;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorCode = error instanceof Error && 'code' in error ? String(error.code) : undefined;
+
       await this.analytics.track('ApiRequestError', {
-          endpoint: '/Houses',
+        endpoint: '/Houses',
         method: 'GET',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: errorMessage,
+        error_code: errorCode
+      });
+
+      await this.analytics.track('ErrorOccurred', {
+        error_type: 'API Request Failed',
+        error_message: `Failed to fetch houses: ${errorMessage}`,
+        page_name: window.location.pathname
       });
 
       throw error;
@@ -46,32 +60,52 @@ export class WizardWorldApiServiceImpl implements WizardWorldApiService {
 
   async getHouseById(id: string): Promise<HouseDto> {
     if (!id) {
-      throw new Error('House ID is required');
+      const error = new Error('House ID is required');
+      await this.analytics.track('ErrorOccurred', {
+        error_type: 'Validation Error',
+        error_message: error.message,
+        page_name: window.location.pathname
+      });
+      throw error;
     }
+
+    const startTime = Date.now();
 
     try {
       await this.analytics.track('ApiRequestStarted', {
-          endpoint: `/Houses/${id}`,
-          method: 'GET',
-          houseId: id
+        endpoint: `/Houses/${id}`,
+        method: 'GET',
+        houseId: id
       });
 
       const house = await this.httpClient.get<HouseDto>(`/Houses/${id}`);
+      const responseTime = Date.now() - startTime;
 
       await this.analytics.track('ApiRequestSuccess', {
-          endpoint: `/Houses/${id}`,
-          method: 'GET',
-          houseId: id,
-          houseName: house.name ?? undefined
+        endpoint: `/Houses/${id}`,
+        method: 'GET',
+        houseId: id,
+        houseName: house.name || undefined,
+        response_time: responseTime
       });
 
       return house;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorCode = error instanceof Error && 'code' in error ? String(error.code) : undefined;
+
       await this.analytics.track('ApiRequestError', {
-          endpoint: `/Houses/${id}`,
-          method: 'GET',
+        endpoint: `/Houses/${id}`,
+        method: 'GET',
         houseId: id,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: errorMessage,
+        error_code: errorCode
+      });
+
+      await this.analytics.track('ErrorOccurred', {
+        error_type: 'API Request Failed',
+        error_message: `Failed to fetch house ${id}: ${errorMessage}`,
+        page_name: window.location.pathname
       });
 
       throw error;

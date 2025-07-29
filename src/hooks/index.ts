@@ -1,2 +1,3 @@
-// Export all hooks
-export { useHouses } from './useHouses'; 
+export { useHouses } from './useHouses';
+export { usePageTracking } from './usePageTracking';
+export { useAnalytics } from './useAnalytics'; 

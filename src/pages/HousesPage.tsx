@@ -1,27 +1,22 @@
 import { useEffect } from 'react';
 import { useHouses } from '../hooks/useHouses';
+import { useAnalytics } from '../hooks/useAnalytics';
 import { HouseCard } from '../components/HouseCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { serviceContainer } from '../services/container';
 
 export function HousesPage() {
   const { state, fetchHouses } = useHouses();
-  const analytics = serviceContainer.getAnalyticsService();
+  const { trackButtonClick } = useAnalytics();
 
   useEffect(() => {
-
-    // Fetch houses if not already loaded
     if (state.houses.length === 0 && !state.loading && !state.error) {
       fetchHouses();
     }
-  }, [fetchHouses, state.houses.length, state.loading, state.error, analytics]);
+  }, [fetchHouses, state.houses.length, state.loading, state.error]);
 
   const handleRetry = () => {
-    analytics.track('ButtonClicked', {
-      id: 'retry_button',
-      label: 'Retry'
-    })
+    trackButtonClick('retry_button', 'Retry');
     fetchHouses();
   };
 
@@ -66,57 +61,46 @@ export function HousesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 bg-fixed">
-      <div className="content-grid min-h-screen">
-        {/* Hero Section */}
-        <header className="full-width relative py-16 sm:py-24 overflow-hidden">
-          {/* Background with magical gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-800/20 via-violet-700/30 to-indigo-900/40"></div>
-          <div className="absolute inset-0 opacity-40" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
-          <div className="container-responsive text-center">
-            <div className="glass-strong rounded-3xl p-8 sm:p-12 backdrop-blur-lg">
-              <div className="flex justify-center items-center gap-4 mb-6">
-                <span 
-                  className="text-5xl sm:text-6xl lg:text-7xl animate-magical-glow filter drop-shadow-2xl"
-                  style={{ animationDelay: '0ms' }}
-                >
-                  🏰
-                </span>
-                <span 
-                  className="text-5xl sm:text-6xl lg:text-7xl animate-magical-glow filter drop-shadow-2xl"
-                  style={{ animationDelay: '1500ms' }}
-                >
-                  🪄
-                </span>
+    <div className="min-h-screen relative overflow-hidden" style={{
+      background: 'linear-gradient(135deg, #504a74 0%, #181625 100%)'
+    }}>
+      <div className="absolute inset-0 opacity-30">
+        <img 
+          src="/src/assets/background_main.svg" 
+          alt="" 
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <div className="min-h-screen relative z-20">
+        <div className="flex justify-center gap-3 pt-0 mb-8">
+          <img src="/src/assets/house_g.svg" alt="Gryffindor" className="h-25 object-contain drop-shadow-lg" />
+          <img src="/src/assets/house_r.svg" alt="Ravenclaw" className="h-25 object-contain drop-shadow-lg" />
+          <img src="/src/assets/house_h.svg" alt="Hufflepuff" className="h-25 object-contain drop-shadow-lg" />
+          <img src="/src/assets/house_s.svg" alt="Slytherin" className="h-25 object-contain drop-shadow-lg" />
+        </div>
+
+        <header className="relative py-5 overflow-hidden">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <div className="glass-strong rounded-3xl p-4 sm:p-8 backdrop-blur-lg border border-white/10">
+              <div className="flex justify-center items-center gap-3 mb-4">
+                <span className="text-3xl sm:text-4xl animate-gentle-float filter drop-shadow-lg">🏰</span>
               </div>
               
-              <h1 className="heading-magical text-4xl sm:text-5xl lg:text-7xl text-white mb-6 text-shadow-magical">
+              <h1 className="heading-magical text-3xl sm:text-4xl lg:text-5xl text-white mb-4 text-shadow-magical">
                 Houses of Hogwarts
               </h1>
               
-              <p className="text-lg sm:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto font-light">
+              <p className="text-base sm:text-lg text-white/90 leading-relaxed max-w-xl mx-auto font-light mb-4">
                 Discover the four noble houses of Hogwarts School of Witchcraft and Wizardry.
                 <br className="hidden sm:block" />
                 Each house has its own noble history and each has produced outstanding witches and wizards.
               </p>
-              
-              <div className="mt-8 flex justify-center">
-                <div className="flex gap-3">
-                  <div className="w-20 h-1.5 rounded-full shadow-lg" style={{ backgroundColor: '#D3343F' }}></div>
-                  <div className="w-20 h-1.5 rounded-full shadow-lg" style={{ backgroundColor: '#1B7332' }}></div>
-                  <div className="w-20 h-1.5 rounded-full shadow-lg" style={{ backgroundColor: '#F1C40F' }}></div>
-                  <div className="w-20 h-1.5 rounded-full shadow-lg" style={{ backgroundColor: '#0066CC' }}></div>
-                </div>
-              </div>
             </div>
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="py-16 relative">
-          {/* Loading Overlay */}
+        <main className="py-8 relative">
           {state.loading && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
               <div className="glass-strong rounded-2xl p-8">
@@ -125,18 +109,16 @@ export function HousesPage() {
             </div>
           )}
 
-          <div className="container-responsive">
-            {/* Section Header */}
-            <div className="text-center mb-16">
-              <h2 className="heading-magical text-3xl sm:text-4xl text-white mb-4 text-shadow-crisp">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="heading-magical text-2xl sm:text-3xl text-white mb-3 text-shadow-crisp">
                 Choose Your Destiny
               </h2>
-              <p className="text-lg text-white/80 max-w-2xl mx-auto">
+              <p className="text-base text-white/80 max-w-xl mx-auto">
                 Click on any house to discover its unique characteristics, values, and notable members.
               </p>
             </div>
 
-            {/* Empty State */}
             {state.houses.length === 0 && !state.loading && !state.error ? (
               <div className="text-center py-16">
                 <div className="glass rounded-2xl p-12 max-w-md mx-auto">
@@ -156,8 +138,7 @@ export function HousesPage() {
               </div>
             ) : (
               <>
-                {/* Houses Grid */}
-                <div className="houses-grid mb-20">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-12">
                   {state.houses.map((house, index) => (
                     <div 
                       key={house.id}
@@ -169,18 +150,17 @@ export function HousesPage() {
                   ))}
                 </div>
 
-                {/* Enhanced Footer */}
-                <footer className="text-center py-12">
-                  <div className="glass rounded-2xl p-8 max-w-2xl mx-auto">
-                    <div className="flex justify-center items-center gap-3 mb-4">
-                      <span className="text-2xl animate-pulse-slow">✨</span>
-                      <span className="text-2xl animate-pulse-slow" style={{ animationDelay: '1s' }}>🌟</span>
-                      <span className="text-2xl animate-pulse-slow" style={{ animationDelay: '2s' }}>✨</span>
+                <footer className="text-center py-6">
+                  <div className="glass rounded-2xl p-4 max-w-lg mx-auto">
+                    <div className="flex justify-center items-center gap-2 mb-2">
+                      <span className="text-lg animate-pulse-slow">✨</span>
+                      <span className="text-lg animate-pulse-slow" style={{ animationDelay: '1s' }}>🌟</span>
+                      <span className="text-lg animate-pulse-slow" style={{ animationDelay: '2s' }}>✨</span>
                     </div>
-                    <p className="heading-magical text-xl text-white/90 mb-2">
+                    <p className="heading-magical text-base text-white/90 mb-1">
                       May your journey through Hogwarts
                     </p>
-                    <p className="text-white/80">
+                    <p className="text-xs text-white/80">
                       be filled with magic, friendship, and endless wonder
                     </p>
                   </div>

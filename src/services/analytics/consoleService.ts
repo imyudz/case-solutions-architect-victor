@@ -7,7 +7,6 @@ export class NoOpAnalyticsService<E extends Record<string, unknown>> implements 
     async flush(): Promise<void> {}
 }
 
-// analytics/providers/console.ts
 export class ConsoleAnalyticsService<E extends Record<string, unknown>> implements AnalyticsService<E> {
     async track<K extends keyof E>(event: K, properties: E[K]): Promise<void> {
         console.log('[Analytics] Track:', event as string, properties);

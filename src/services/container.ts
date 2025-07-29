@@ -1,12 +1,9 @@
-//HTTP Client imports
 import { AxiosHttpClient } from './httpClient';
 import type { HttpClient } from './httpClient';
 
-//WizardWorld API imports
 import { WizardWorldApiServiceImpl } from './wizardWorldApi';
 import type { WizardWorldApiService } from './wizardWorldApi';
 
-//Analytics imports
 import { AmplitudeAnalyticsService } from './analytics/amplitudeService';
 import { ConsoleAnalyticsService, NoOpAnalyticsService } from './analytics/consoleService';
 import type { AnalyticsService } from '../types/analytics';
@@ -45,8 +42,7 @@ export class ServiceContainer {
       this.httpClientInstance = new AxiosHttpClient(
         this.config.apiBaseUrl,
         {
-          'Accept': 'application/json',
-          'User-Agent': 'WizardWorld-App/1.0'
+          'Accept': 'application/json'
         }
       );
     }
@@ -92,7 +88,6 @@ export class ServiceContainer {
     return { ...this.config };
   }
 }
-
 
 export const serviceContainer = new ServiceContainer({
   apiBaseUrl: 'https://wizard-world-api.herokuapp.com',
