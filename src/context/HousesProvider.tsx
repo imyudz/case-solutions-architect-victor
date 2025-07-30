@@ -99,19 +99,10 @@ export function HousesProvider({ children }: HousesProviderProps) {
     dispatch({ type: 'FETCH_HOUSES_START' });
 
     try {
-      await analytics.track('FeatureUsed', {
-        feature_name: 'houses_list_fetch',
-        usage_context: 'houses_provider'
-      });
-
       const houses = await apiService.getHouses();
       
       dispatch({ type: 'FETCH_HOUSES_SUCCESS', payload: houses });
 
-      await analytics.track('FeatureUsed', {
-        feature_name: 'houses_list_loaded',
-        usage_context: `${houses.length}_houses_loaded`
-      });
     } catch (error) {
       const apiError: ApiError = {
         message: error instanceof Error ? error.message : 'Failed to fetch houses',
@@ -133,19 +124,10 @@ export function HousesProvider({ children }: HousesProviderProps) {
     dispatch({ type: 'FETCH_HOUSE_START' });
 
     try {
-      await analytics.track('FeatureUsed', {
-        feature_name: 'house_detail_fetch',
-        usage_context: `house_${id}`
-      });
-
       const house = await apiService.getHouseById(id);
       
       dispatch({ type: 'FETCH_HOUSE_SUCCESS', payload: house });
 
-      await analytics.track('FeatureUsed', {
-        feature_name: 'house_detail_loaded',
-        usage_context: house.name || 'unknown_house'
-      });
     } catch (error) {
       const apiError: ApiError = {
         message: error instanceof Error ? error.message : 'Failed to fetch house details',

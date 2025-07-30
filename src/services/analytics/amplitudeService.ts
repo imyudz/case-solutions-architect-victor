@@ -1,6 +1,7 @@
 import type { AnalyticsService } from '../../types/analytics';
 import * as amplitude from '@amplitude/analytics-browser';
 import { sessionReplayPlugin } from '@amplitude/plugin-session-replay-browser';
+import { detectPlatform } from '../../utils/platformUtils';
 
 export class AmplitudeAnalyticsService<E extends Record<string, unknown>> implements AnalyticsService<E>{
   private static initialized = false;
@@ -50,7 +51,8 @@ export class AmplitudeAnalyticsService<E extends Record<string, unknown>> implem
         viewport_width: window.innerWidth,
         viewport_height: window.innerHeight,
         app_version: '1.0.0',
-        environment: import.meta.env.MODE
+        environment: import.meta.env.MODE,
+        app_platform: detectPlatform()
       };
       
       amplitude.track(String(event), enrichedProperties);
@@ -73,7 +75,7 @@ export class AmplitudeAnalyticsService<E extends Record<string, unknown>> implem
         const userProperties = {
           ...traits,
           last_seen: new Date().toISOString(),
-          platform: navigator.platform,
+          app_platform: detectPlatform(),
           language: navigator.language,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
         };
@@ -93,7 +95,7 @@ export class AmplitudeAnalyticsService<E extends Record<string, unknown>> implem
 
   async page(name: string, properties?: E['PageView']): Promise<void> {
     if (!AmplitudeAnalyticsService.initialized) {
-      console.warn('Amplitude not initialized. Page view not tracked:', name);
+      console.warn('Amplitude not initialized. Page visit not tracked:', name);
       return;
     }
     
@@ -110,14 +112,15 @@ export class AmplitudeAnalyticsService<E extends Record<string, unknown>> implem
         viewport_height: window.innerHeight,
         user_agent: navigator.userAgent,
         app_version: '1.0.0',
-        environment: import.meta.env.MODE
+        environment: import.meta.env.MODE,
+        app_platform: detectPlatform()
       };
       
-      amplitude.track('Page View', pageProperties);
+      amplitude.track('Page Visit', pageProperties);
       
-      console.log('[Amplitude] Page view tracked:', name, pageProperties);
+      console.log('[Amplitude] Page Visit tracked:', name, pageProperties);
     } catch (error) {
-      console.error('[Amplitude] Failed to track page view:', name, error);
+      console.error('[Amplitude] Failed to track page visit:', name, error);
     }
   }
 
@@ -127,7 +130,7 @@ export class AmplitudeAnalyticsService<E extends Record<string, unknown>> implem
     }
     
     try {
-      await amplitude.flush();
+      amplitude.flush();
       console.log('[Amplitude] Events flushed successfully');
     } catch (error) {
       console.error('[Amplitude] Failed to flush events:', error);

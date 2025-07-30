@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { serviceContainer } from '../services/container';
+import { detectPlatform } from '../utils/platformUtils';
 
 export function usePageTracking() {
   const location = useLocation();
@@ -19,15 +20,21 @@ export function usePageTracking() {
 
     const pageName = getPageName(location.pathname);
     
-    analytics.page(pageName, {
-      page_name: pageName,
-      path: location.pathname
-    });
+    // Send Page View - for house_detail, detailed tracking is done in HouseDetailPage.tsx
+    if (pageName !== 'house_detail') {
+      analytics.page(pageName, {
+        page_name: pageName,
+        path: location.pathname
+      });
+    }
 
+    // Track session start only once  
     if (Date.now() - sessionStart.current < 1000) {
+      const sessionId = crypto.randomUUID();
+
       analytics.track('SessionStarted', {
-        session_id: crypto.randomUUID(),
-        platform: navigator.platform,
+        session_id: sessionId,
+        app_platform: detectPlatform(),
         user_agent: navigator.userAgent
       });
     }
@@ -76,12 +83,6 @@ export function usePageTracking() {
   }, [location.pathname, analytics]);
 
   return {
-    trackEvent: analytics.track.bind(analytics),
-    trackFeatureUsage: (featureName: string, context?: string) => {
-      analytics.track('FeatureUsed', {
-        feature_name: featureName,
-        usage_context: context
-      });
-    }
+    trackEvent: analytics.track.bind(analytics)
   };
 } 

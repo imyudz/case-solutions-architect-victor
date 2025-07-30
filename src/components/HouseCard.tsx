@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useRef } from 'react';
 import type { HouseDto } from '../types/api';
 import { useAnalytics } from '../hooks/useAnalytics';
 
@@ -9,13 +10,21 @@ interface HouseCardProps {
 
 export function HouseCard({ house, className = '' }: HouseCardProps) {
   const { trackButtonClick, trackHouseCardHover, trackTraitClick } = useAnalytics();
+  const hoverCleanupRef = useRef<(() => void) | null>(null);
 
   const handleCardClick = () => {
     trackButtonClick('house_card_clicked', 'Explore House');
   };
 
   const handleMouseEnter = () => {
-    return trackHouseCardHover(house.id, house.name || undefined);
+    hoverCleanupRef.current = trackHouseCardHover(house.id, house.name || undefined);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverCleanupRef.current) {
+      hoverCleanupRef.current();
+      hoverCleanupRef.current = null;
+    }
   };
 
   const handleTraitClick = (traitName: string, event: React.MouseEvent) => {
@@ -65,6 +74,7 @@ export function HouseCard({ house, className = '' }: HouseCardProps) {
       className={`block w-full text-inherit no-underline ${className}`}
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <article 
         className={`group relative card-magical card-house hover-lift interactive

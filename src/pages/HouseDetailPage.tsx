@@ -10,7 +10,7 @@ export function HouseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { state, fetchHouseById, clearSelectedHouse } = useHouses();
-  const { trackButtonClick } = useAnalytics();
+  const { trackButtonClick, analytics } = useAnalytics();
 
   useEffect(() => {
     if (!id) {
@@ -24,6 +24,18 @@ export function HouseDetailPage() {
       clearSelectedHouse();
     };
   }, [id, fetchHouseById, clearSelectedHouse, navigate]);
+
+  // Track page view when house data is loaded
+  useEffect(() => {
+    if (state.selectedHouse && state.selectedHouse.name && id) {
+      analytics.page('house_detail', {
+        page_name: 'house_detail',
+        path: window.location.pathname,
+        house_id: id,
+        house_name: state.selectedHouse.name
+      });
+    }
+  }, [state.selectedHouse, id, analytics]);
 
   const handleRetry = () => {
     if (!id) return;
