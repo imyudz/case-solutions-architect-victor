@@ -66,7 +66,7 @@ export function HousesPage() {
     }}>
       <div className="absolute inset-0 opacity-30">
         <img 
-          src="/src/assets/background_main.svg" 
+          src="public/background_main.svg" 
           alt="" 
           className="w-full h-full object-cover"
         />
@@ -74,10 +74,10 @@ export function HousesPage() {
 
       <div className="min-h-screen relative z-20">
         <div className="flex justify-center gap-3 pt-0 mb-8">
-          <img src="/src/assets/house_g.svg" alt="Gryffindor" className="h-25 object-contain drop-shadow-lg" />
-          <img src="/src/assets/house_r.svg" alt="Ravenclaw" className="h-25 object-contain drop-shadow-lg" />
-          <img src="/src/assets/house_h.svg" alt="Hufflepuff" className="h-25 object-contain drop-shadow-lg" />
-          <img src="/src/assets/house_s.svg" alt="Slytherin" className="h-25 object-contain drop-shadow-lg" />
+          <img src="public/house_g.svg" alt="Gryffindor" className="h-25 object-contain drop-shadow-lg" />
+          <img src="public/house_r.svg" alt="Ravenclaw" className="h-25 object-contain drop-shadow-lg" />
+          <img src="public/house_h.svg" alt="Hufflepuff" className="h-25 object-contain drop-shadow-lg" />
+          <img src="public/house_s.svg" alt="Slytherin" className="h-25 object-contain drop-shadow-lg" />
         </div>
 
         <header className="relative py-5 overflow-hidden">

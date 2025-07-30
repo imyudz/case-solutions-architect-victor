@@ -49,10 +49,10 @@ export function HouseCard({ house, className = '' }: HouseCardProps) {
 
   const getHouseBackground = (houseName: string | null) => {
     const name = houseName?.toLowerCase();
-    if (name?.includes('gryffindor')) return '/src/assets/GryffindorCard.svg';
-    if (name?.includes('slytherin')) return '/src/assets/SlytherinCard.svg';
-    if (name?.includes('hufflepuff')) return '/src/assets/HufflepuffCard.svg';
-    if (name?.includes('ravenclaw')) return '/src/assets/RavenclawCard.svg';
+    if (name?.includes('gryffindor')) return 'public/GryffindorCard.svg';
+    if (name?.includes('slytherin')) return 'public/SlytherinCard.svg';
+    if (name?.includes('hufflepuff')) return 'public/HufflepuffCard.svg';
+    if (name?.includes('ravenclaw')) return 'public/RavenclawCard.svg';
     return null;
   };
 

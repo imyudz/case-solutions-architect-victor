@@ -172,10 +172,10 @@ export function HouseDetailPage() {
 
   const getHouseBackground = (houseName: string | null) => {
     const name = houseName?.toLowerCase();
-    if (name?.includes('gryffindor')) return '/src/assets/Gryffindor.svg';
-    if (name?.includes('slytherin')) return '/src/assets/Slytherin.svg';
-    if (name?.includes('hufflepuff')) return '/src/assets/Hufflepuff.svg';
-    if (name?.includes('ravenclaw')) return '/src/assets/Ravenclaw.svg';
+    if (name?.includes('gryffindor')) return 'public/Gryffindor.svg';
+    if (name?.includes('slytherin')) return 'public/Slytherin.svg';
+    if (name?.includes('hufflepuff')) return 'public/Hufflepuff.svg';
+    if (name?.includes('ravenclaw')) return 'public/Ravenclaw.svg';
     return null;
   };
 
