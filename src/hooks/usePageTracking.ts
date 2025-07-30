@@ -13,7 +13,8 @@ export function usePageTracking() {
     const pageStartTime = Date.now();
     
     const getPageName = (pathname: string) => {
-      if (pathname === '/' || pathname === '/houses') return 'houses_list';
+      if (pathname === '/') return 'home';
+      if (pathname === '/houses') return 'houses_list';
       if (pathname.startsWith('/house/')) return 'house_detail';
       return 'unknown';
     };
