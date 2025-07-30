@@ -85,81 +85,121 @@ export function HouseCard({ house, className = '' }: HouseCardProps) {
       onClick={handleCardClick}
     >
       <article 
-        className="group relative bg-white bg-opacity-90 backdrop-blur-sm rounded-xl2 overflow-hidden
-                   shadow-glass border border-white border-opacity-20 
-                   transition-all duration-500 ease-out
-                   hover:-translate-y-2 hover:shadow-magic 
-                   cursor-pointer h-full flex flex-col"
+        className="group relative card-magical card-house hover-lift interactive
+                   h-full min-h-[420px] flex flex-col overflow-hidden
+                   focus-ring"
         style={{
-          '--primary-color': primaryColor,
-          '--secondary-color': secondaryColor
+          '--house-primary': primaryColor,
+          '--house-secondary': secondaryColor
         } as React.CSSProperties}
       >
-        {/* Header with house colors */}
-        <div 
-          className={`relative ${getHouseGradient(house.name)} p-6 flex justify-between items-center min-h-20`}
-        >
-          {/* House symbols */}
-          <div className="flex items-center gap-3">
-            <span className="text-3xl md:text-4xl animate-gentle-float filter drop-shadow-lg">
-              {getAnimalEmoji(house.animal)}
-            </span>
-            <span 
-              className="text-3xl md:text-4xl animate-gentle-float filter drop-shadow-lg"
-              style={{ animationDelay: '1.5s' }}
-            >
-              {getHouseElement(house.element)}
-            </span>
+        {/* Modern Header */}
+        <div className="relative p-6 bg-gradient-to-br from-var(--house-primary)/20 to-var(--house-secondary)/10 
+                        border-b border-var(--house-primary)/20">
+          <div className="flex justify-between items-center mb-4">
+            {/* House symbols with enhanced animations */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <span className="text-4xl md:text-5xl animate-gentle-float filter drop-shadow-2xl 
+                               transition-transform duration-300 group-hover:scale-110">
+                  {getAnimalEmoji(house.animal)}
+                </span>
+                <div className="absolute inset-0 animate-magical-glow opacity-30 blur-sm">
+                  {getAnimalEmoji(house.animal)}
+                </div>
+              </div>
+              <div className="relative">
+                <span 
+                  className="text-4xl md:text-5xl animate-gentle-float filter drop-shadow-2xl
+                           transition-transform duration-300 group-hover:scale-110"
+                  style={{ animationDelay: '1.5s' }}
+                >
+                  {getHouseElement(house.element)}
+                </span>
+                <div className="absolute inset-0 animate-magical-glow opacity-30 blur-sm" 
+                     style={{ animationDelay: '1.5s' }}>
+                  {getHouseElement(house.element)}
+                </div>
+              </div>
+            </div>
+            
+            {/* Modern color indicators */}
+            <div className="flex gap-2">
+              <div 
+                className="w-4 h-4 rounded-full border-2 border-white/50 shadow-lg
+                          transition-transform duration-300 group-hover:scale-125"
+                style={{ backgroundColor: primaryColor }}
+              ></div>
+              <div 
+                className="w-4 h-4 rounded-full border-2 border-white/50 shadow-lg
+                          transition-transform duration-300 group-hover:scale-125"
+                style={{ backgroundColor: secondaryColor }}
+              ></div>
+            </div>
           </div>
           
-          {/* Color stripes */}
-          <div className="flex flex-col gap-1 w-15 h-10">
-            <div 
-              className="flex-1 rounded-full shadow-inner"
-              style={{ backgroundColor: primaryColor }}
-            ></div>
-            <div 
-              className="flex-1 rounded-full shadow-inner"
-              style={{ backgroundColor: secondaryColor }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 p-6 flex flex-col gap-3">
-          <h2 className="text-xl md:text-2xl font-bold text-magic-800 mb-2">
+          {/* House name with modern typography */}
+          <h2 className="heading-magical text-2xl md:text-3xl text-var(--color-text-primary) 
+                         text-shadow-crisp mb-2 line-clamp-1">
             {house.name || 'Unknown House'}
           </h2>
-          
-          {house.founder && (
-            <div className="text-sm text-magic-600">
-              <span className="font-medium text-magic-700">Founded by:</span>
-              <span className="ml-2">{house.founder}</span>
-            </div>
-          )}
+        </div>
 
-          {house.element && (
-            <div className="text-sm text-magic-600">
-              <span className="font-medium text-magic-700">Element:</span>
-              <span className="ml-2 capitalize">{house.element}</span>
-            </div>
-          )}
+        {/* Modern Content */}
+        <div className="flex-1 p-6 flex flex-col justify-between min-h-[160px]">
+          <div className="space-y-3">
+            {house.founder && (
+              <div className="group/info">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-var(--color-text-tertiary) font-medium">Founded by</span>
+                  <div className="flex-1 h-px bg-gradient-to-r from-var(--house-primary)/20 to-transparent"></div>
+                </div>
+                <p className="text-sm font-medium text-var(--color-text-primary) mt-1 
+                            group-hover/info:text-var(--house-primary) transition-colors duration-200 line-clamp-1">
+                  {house.founder}
+                </p>
+              </div>
+            )}
+
+            {house.element && (
+              <div className="group/info">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-var(--color-text-tertiary) font-medium">Element</span>
+                  <div className="flex-1 h-px bg-gradient-to-r from-var(--house-primary)/20 to-transparent"></div>
+                </div>
+                <p className="text-sm font-medium text-var(--color-text-primary) mt-1 capitalize
+                            group-hover/info:text-var(--house-primary) transition-colors duration-200">
+                  {house.element}
+                </p>
+              </div>
+            )}
+          </div>
 
           {house.traits && house.traits.length > 0 && (
-            <div className="text-sm text-magic-600">
-              <span className="font-medium text-magic-700 block mb-1">Traits:</span>
-              <div className="flex flex-wrap gap-1">
-                {house.traits.slice(0, 3).map((trait) => (
+            <div className="group/info mt-4">
+              <div className="flex items-center gap-2 text-sm mb-2">
+                <span className="text-var(--color-text-tertiary) font-medium">House Traits</span>
+                <div className="flex-1 h-px bg-gradient-to-r from-var(--house-primary)/20 to-transparent"></div>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {house.traits.slice(0, 2).map((trait) => (
                   <span 
                     key={trait.id} 
-                    className="inline-block bg-magic-100 text-magic-700 px-2 py-1 rounded-full text-xs"
+                    className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                             bg-var(--house-primary)/10 text-var(--house-primary) 
+                             border border-var(--house-primary)/20
+                             hover:bg-var(--house-primary)/20 hover:scale-105
+                             transition-all duration-200 cursor-default"
                   >
                     {typeof trait.name === 'string' ? trait.name : ''}
                   </span>
                 ))}
-                {house.traits.length > 3 && (
-                  <span className="inline-block bg-magic-200 text-magic-600 px-2 py-1 rounded-full text-xs">
-                    +{house.traits.length - 3} more
+                {house.traits.length > 2 && (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                                 bg-var(--color-surface-tertiary) text-var(--color-text-secondary) 
+                                 border border-var(--color-border)
+                                 cursor-default">
+                    +{house.traits.length - 2}
                   </span>
                 )}
               </div>
@@ -167,23 +207,48 @@ export function HouseCard({ house, className = '' }: HouseCardProps) {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="p-6 pt-0">
-          <div className="text-center">
-            <span className="inline-flex items-center gap-2 text-magic-600 font-medium 
-                           group-hover:text-magic-800 transition-colors duration-300">
-              Learn More 
-              <span className="transform group-hover:translate-x-1 transition-transform duration-300">
-                →
+        {/* Modern Footer */}
+        <div className="p-6 pt-3 mt-auto">
+          <div className="flex items-center justify-between p-4 rounded-xl 
+                        bg-gradient-to-r from-var(--house-primary)/5 to-var(--house-secondary)/5
+                        border border-var(--house-primary)/10
+                        group-hover:from-var(--house-primary)/10 group-hover:to-var(--house-secondary)/10
+                        transition-all duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-var(--house-primary)/20 
+                            flex items-center justify-center
+                            group-hover:bg-var(--house-primary)/30 
+                            transition-all duration-300 group-hover:scale-110">
+                <span className="text-sm">🏰</span>
+              </div>
+              <span className="text-sm font-medium text-var(--color-text-secondary)
+                             group-hover:text-var(--house-primary) transition-colors duration-300">
+                Explore House
               </span>
-            </span>
+            </div>
+            
+            <div className="flex items-center gap-1 text-var(--house-primary)
+                          transform group-hover:translate-x-1 transition-transform duration-300">
+              <span className="w-1 h-1 rounded-full bg-current opacity-60"></span>
+              <span className="w-2 h-1 rounded-full bg-current opacity-80"></span>
+              <span className="w-3 h-1 rounded-full bg-current"></span>
+            </div>
           </div>
         </div>
 
-        {/* Shimmer effect on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white via-opacity-20 to-transparent 
-                          transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out">
+        {/* Enhanced shimmer effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-r 
+                        from-transparent via-white/10 via-white/20 via-white/10 to-transparent 
+                        transform -translate-x-full group-hover:translate-x-full 
+                        transition-transform duration-1000 ease-out">
+          </div>
+        </div>
+
+        {/* Magical glow effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-var(--house-primary)/20 to-var(--house-secondary)/20 
+                        blur-xl transform scale-105">
           </div>
         </div>
       </article>
