@@ -1,7 +1,6 @@
 import { createContext } from 'react';
 import type { HouseDto, ApiError } from '../types/api';
 
-// State interface
 export interface HousesState {
   houses: HouseDto[];
   selectedHouse: HouseDto | null;
@@ -9,7 +8,6 @@ export interface HousesState {
   error: ApiError | null;
 }
 
-// Context interface
 export interface HousesContextType {
   state: HousesState;
   fetchHouses: () => Promise<void>;
@@ -18,5 +16,4 @@ export interface HousesContextType {
   clearSelectedHouse: () => void;
 }
 
-// Create context
 export const HousesContext = createContext<HousesContextType | undefined>(undefined); 

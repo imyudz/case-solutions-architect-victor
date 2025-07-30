@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHouses } from '../hooks/useHouses';
+import { useAnalytics } from '../hooks/useAnalytics';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { serviceContainer } from '../services/container';
+import { EmailCapture } from '../components/EmailCapture';
 
 export function HouseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { state, fetchHouseById, clearSelectedHouse } = useHouses();
-  const analytics = serviceContainer.getAnalyticsService();
+  const { trackButtonClick } = useAnalytics();
 
   useEffect(() => {
     if (!id) {
@@ -17,44 +18,22 @@ export function HouseDetailPage() {
       return;
     }
 
-    analytics.track({
-      name: 'page_view',
-      properties: {
-        page: 'house_detail',
-        path: `/house/${id}`,
-        houseId: id
-      }
-    });
-
     fetchHouseById(id);
 
     return () => {
       clearSelectedHouse();
     };
-  }, [id, fetchHouseById, clearSelectedHouse, navigate, analytics]);
+  }, [id, fetchHouseById, clearSelectedHouse, navigate]);
 
   const handleRetry = () => {
     if (!id) return;
     
-    analytics.track({
-      name: 'retry_button_clicked',
-      properties: {
-        page: 'house_detail',
-        houseId: id,
-        errorType: state.error?.code || 'unknown'
-      }
-    });
+    trackButtonClick('retry_button', 'Retry');
     fetchHouseById(id);
   };
 
   const handleBackToHouses = () => {
-    analytics.track({
-      name: 'back_to_houses_clicked',
-      properties: {
-        page: 'house_detail',
-        houseId: id
-      }
-    });
+    trackButtonClick('back_to_houses_button', 'Back to Houses');
     navigate('/houses');
   };
 
@@ -104,12 +83,13 @@ export function HouseDetailPage() {
     return element ? elementIcons[element.toLowerCase()] || '⭐' : '⭐';
   };
 
-
-
   if (state.loading) {
     return (
-      <div className="min-h-screen bg-magic-gradient bg-fixed py-8">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="min-h-screen py-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(135deg, #504a74 0%, #181625 100%)'
+      }}>
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
           <LoadingSpinner 
             size="large" 
             message="Revealing the secrets of the house..." 
@@ -121,14 +101,25 @@ export function HouseDetailPage() {
 
   if (state.error) {
     return (
-      <div className="min-h-screen bg-magic-gradient bg-fixed py-8">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="min-h-screen py-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(135deg, #504a74 0%, #181625 100%)'
+      }}>
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
           <div className="mb-8">
             <button 
               onClick={handleBackToHouses}
-              className="btn-secondary inline-flex items-center gap-2"
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-xl
+                       bg-black/40 backdrop-blur-md border border-white/20
+                       text-white font-medium hover:bg-black/60 hover:border-white/30
+                       transition-all duration-300 group cursor-pointer"
             >
-              ← Back to Houses
+              <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" 
+                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Houses
             </button>
           </div>
           <ErrorMessage 
@@ -143,14 +134,25 @@ export function HouseDetailPage() {
 
   if (!state.selectedHouse) {
     return (
-      <div className="min-h-screen bg-magic-gradient bg-fixed py-8">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="min-h-screen py-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(135deg, #504a74 0%, #181625 100%)'
+      }}>
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
           <div className="mb-8">
             <button 
               onClick={handleBackToHouses}
-              className="btn-secondary inline-flex items-center gap-2"
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-xl
+                       bg-black/40 backdrop-blur-md border border-white/20
+                       text-white font-medium hover:bg-black/60 hover:border-white/30
+                       transition-all duration-300 group cursor-pointer"
             >
-              ← Back to Houses
+              <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" 
+                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Houses
             </button>
           </div>
           <div className="text-center py-16">
@@ -168,28 +170,66 @@ export function HouseDetailPage() {
   const house = state.selectedHouse;
   const [primaryColor, secondaryColor] = getHouseColors(house.houseColours);
 
+  const getHouseBackground = (houseName: string | null) => {
+    const name = houseName?.toLowerCase();
+    if (name?.includes('gryffindor')) return '/src/assets/Gryffindor.svg';
+    if (name?.includes('slytherin')) return '/src/assets/Slytherin.svg';
+    if (name?.includes('hufflepuff')) return '/src/assets/Hufflepuff.svg';
+    if (name?.includes('ravenclaw')) return '/src/assets/Ravenclaw.svg';
+    return null;
+  };
+
+  const getHouseGradient = (houseName: string | null) => {
+    const name = houseName?.toLowerCase();
+    if (name?.includes('gryffindor')) return 'linear-gradient(135deg, #7c2d2d 0%, #b8860b 100%)';
+    if (name?.includes('slytherin')) return 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)';
+    if (name?.includes('hufflepuff')) return 'linear-gradient(135deg, #b8860b 0%, #2c1810 100%)';
+    if (name?.includes('ravenclaw')) return 'linear-gradient(135deg, #1e3a8a 0%, #374151 100%)';
+    return 'linear-gradient(135deg, #504a74 0%, #181625 100%)';
+  };
+
+  const houseBackground = getHouseBackground(house.name);
+  const houseGradient = getHouseGradient(house.name);
+
   return (
     <div 
-      className="min-h-screen bg-magic-gradient bg-fixed py-8"
+      className="min-h-screen py-8 relative overflow-hidden"
       style={{
         '--primary-color': primaryColor,
-        '--secondary-color': secondaryColor
+        '--secondary-color': secondaryColor,
+        background: houseGradient
       } as React.CSSProperties}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back button */}
+      {houseBackground && (
+        <div className="absolute inset-0 opacity-20">
+          <img 
+            src={houseBackground} 
+            alt="" 
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+      )}
+      
+      <div className="absolute inset-0 bg-black/30"></div>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <button 
             onClick={handleBackToHouses}
-            className="btn-secondary inline-flex items-center gap-2"
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl
+                     bg-black/40 backdrop-blur-md border border-white/20
+                     text-white font-medium hover:bg-black/60 hover:border-white/30
+                     transition-all duration-300 group cursor-pointer"
           >
-            ← Back to Houses
+            <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" 
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Houses
           </button>
         </div>
 
-        {/* Main content */}
         <main className="space-y-8">
-          {/* Header */}
           <header className="text-center glass rounded-magical p-8 shadow-glass">
             <div className="flex justify-center items-center gap-6 mb-6">
               <span className="text-6xl md:text-7xl animate-gentle-float filter drop-shadow-lg">
@@ -203,7 +243,6 @@ export function HouseDetailPage() {
               </span>
             </div>
             
-            {/* Color stripes */}
             <div className="flex justify-center gap-2 mb-6">
               <div 
                 className="w-20 h-4 rounded-full shadow-inner"
@@ -220,9 +259,7 @@ export function HouseDetailPage() {
             </h1>
           </header>
 
-          {/* Content grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Foundation section */}
             <section className="glass rounded-magical p-6 shadow-glass">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 🏛️ Foundation
@@ -259,7 +296,6 @@ export function HouseDetailPage() {
               </div>
             </section>
 
-            {/* House details section */}
             <section className="glass rounded-magical p-6 shadow-glass">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 🏰 House Details
@@ -283,7 +319,6 @@ export function HouseDetailPage() {
             </section>
           </div>
 
-          {/* Traits section */}
           {house.traits && house.traits.length > 0 && (
             <section className="glass rounded-magical p-6 shadow-glass">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
@@ -293,7 +328,7 @@ export function HouseDetailPage() {
                 {house.traits.map((trait) => (
                   <div 
                     key={trait.id} 
-                    className="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 
+                    className="--primary-color bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 
                              rounded-full border border-white border-opacity-30 
                              hover:bg-opacity-30 transition-all duration-300"
                   >
@@ -304,7 +339,6 @@ export function HouseDetailPage() {
             </section>
           )}
 
-          {/* House heads section */}
           {house.heads && house.heads.length > 0 && (
             <section className="glass rounded-magical p-6 shadow-glass">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
@@ -314,7 +348,7 @@ export function HouseDetailPage() {
                 {house.heads.map((head) => (
                   <div 
                     key={head.id}
-                    className="bg-white bg-opacity-10 backdrop-blur-sm text-white p-4 
+                    className="--primary-color bg-opacity-10 backdrop-blur-sm text-white p-4 
                              rounded-xl border border-white border-opacity-20
                              hover:bg-opacity-20 transition-all duration-300"
                   >
@@ -326,6 +360,12 @@ export function HouseDetailPage() {
               </div>
             </section>
           )}
+
+          <EmailCapture 
+            houseName={house.name || 'Unknown House'}
+            houseId={id}
+            className="mt-8"
+          />
         </main>
       </div>
     </div>

@@ -1,5 +1,3 @@
-// Base API types for WizardWorld API
-
 export interface HouseDto {
   id: string;
   name: string | null;
